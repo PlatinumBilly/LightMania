@@ -1,7 +1,7 @@
 #include "include/base.h"
 #include "GameLoop.h"
 
-int main() {
+int main(int argc,char* argv[]) {
     GameEngine *e = createEngine();
     e->Init(e);
 

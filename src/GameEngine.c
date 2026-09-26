@@ -1,31 +1,38 @@
 #include "include/GameEngine.h"
 #include "include/base.h"
 
+#define _TRY(expr)                                                             \
+    do {                                                                       \
+        if (!expr) {                                                           \
+            SDL_Log("SDL Error at %s: %d :%s\n", __FILE__, __LINE__,           \
+                    SDL_GetError());                                           \
+            goto cleanup;                                                      \
+        }                                                                      \
+    } while (0)
+
 void programeInit(GameEngine *e) {
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("err:%s\n", SDL_GetError());
-        return;
-    }
-    e->data.win = SDL_CreateWindow("Hello", 800, 600, 0);
-    if (!e->data.win) {
-        SDL_Log("err:%s\n", SDL_GetError());
-        return;
-    }
-    e->data.ren = SDL_CreateRenderer(e->data.win, NULL);
-    if (!e->data.ren) {
-        SDL_Log("err:%s\n", SDL_GetError());
-        return;
-    }
-    if (!TTF_Init()) {
-        SDL_Log("err:%s\n", SDL_GetError());
-        return;
-    }
+    _TRY(SDL_Init(SDL_INIT_VIDEO));
+    e->data.window = SDL_CreateWindow("Hello", 800, 600, 0);
+    _TRY(e->data.window);
+    e->data.render = SDL_CreateRenderer(e->data.window, NULL);
+    _TRY(e->data.render);
+    _TRY(TTF_Init());
+    return;
+cleanup:
+    if (e->data.window)
+        SDL_DestroyWindow(e->data.window);
+    if (e->data.render)
+        SDL_DestroyRenderer(e->data.render);
+    SDL_Quit();
+    free(e);
+    return;
 }
 
 void programeExit(GameEngine *e) {
-    SDL_DestroyRenderer(e->data.ren);
-    SDL_DestroyWindow(e->data.win);
+    SDL_DestroyRenderer(e->data.render);
+    SDL_DestroyWindow(e->data.window);
     SDL_Quit();
+    free(e);
 }
 
 GameEngine *createEngine() {
