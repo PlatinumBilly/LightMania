@@ -5,6 +5,9 @@ out/
 *.so
 *.exe
 *.out
+CMakePresets.json
+
+.clangd
 
 .vscode/
 
