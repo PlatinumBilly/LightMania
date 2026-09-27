@@ -1,9 +1,6 @@
 #ifndef GAMEENGINE_H
 #define GAMEENGINE_H
 
-#include "SDL3/SDL_events.h"
-#include "SDL3/SDL_surface.h"
-#include "SDL3_ttf/SDL_ttf.h"
 #include "base.h"
 
 typedef struct GameEngineData {
@@ -15,8 +12,9 @@ typedef struct GameEngineData {
 
 struct GameEngine {
     GameEngineData data;
-    void (*Init)(struct GameEngine *e);
-    void (*Exit)(struct GameEngine *e);
+    void (*Init)         (struct GameEngine *e);
+    void (*Exit)         (struct GameEngine *e);
+    void (*GameLoop)     (struct GameEngine *e);
 };
 typedef struct GameEngine GameEngine;
 

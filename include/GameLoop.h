@@ -5,6 +5,10 @@
 
 #include "GameEngine.h"
 
-void gameLoop(GameEngine *e);
+void GameLoop(GameEngine *e);
+
+void everyDivisionTime(GameEngine *e, float bpm, int division);
+
+void RenderText(GameEngine *e,char text[]);
 
 #endif

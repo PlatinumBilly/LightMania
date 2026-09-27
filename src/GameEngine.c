@@ -1,22 +1,17 @@
 #include "include/GameEngine.h"
 #include "include/base.h"
-
-#define _TRY(expr)                                                             \
-    do {                                                                       \
-        if (!expr) {                                                           \
-            SDL_Log("SDL Error at %s: %d :%s\n", __FILE__, __LINE__,           \
-                    SDL_GetError());                                           \
-            goto cleanup;                                                      \
-        }                                                                      \
-    } while (0)
+#include "include/GameLoop.h"
 
 void programeInit(GameEngine *e) {
-    _TRY(SDL_Init(SDL_INIT_VIDEO));
+    __TRY(SDL_Init(SDL_INIT_VIDEO));
     e->data.window = SDL_CreateWindow("Hello", 800, 600, 0);
-    _TRY(e->data.window);
+    __TRY(e->data.window);
     e->data.render = SDL_CreateRenderer(e->data.window, NULL);
-    _TRY(e->data.render);
-    _TRY(TTF_Init());
+    __TRY(e->data.render);
+    __TRY(TTF_Init());
+        e->data.font =
+        TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/UbuntuMono-B.ttf", 16);
+    __TRY(e->data.font);
     return;
 cleanup:
     if (e->data.window)
@@ -44,5 +39,6 @@ GameEngine *createEngine() {
     }
     e->Init = programeInit;
     e->Exit = programeExit;
+    e->GameLoop = GameLoop;
     return e;
 }
