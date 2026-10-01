@@ -2,7 +2,7 @@
 #include "include/base.h"
 #include "include/GameLoop.h"
 
-void programeInit(GameEngine *e) {
+void ProgrameInit(GameEngine *e) {
     __TRY(SDL_Init(SDL_INIT_VIDEO));
     e->data.window = SDL_CreateWindow("Hello", 800, 600, 0);
     __TRY(e->data.window);
@@ -12,6 +12,7 @@ void programeInit(GameEngine *e) {
         e->data.font =
         TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/UbuntuMono-B.ttf", 16);
     __TRY(e->data.font);
+    SDL_StartTextInput(e->data.window);
     return;
 cleanup:
     if (e->data.window)
@@ -23,7 +24,7 @@ cleanup:
     return;
 }
 
-void programeExit(GameEngine *e) {
+void ProgrameExit(GameEngine *e) {
     SDL_DestroyRenderer(e->data.render);
     SDL_DestroyWindow(e->data.window);
     SDL_Quit();
@@ -37,8 +38,8 @@ GameEngine *createEngine() {
         free(e);
         return NULL;
     }
-    e->Init = programeInit;
-    e->Exit = programeExit;
+    e->Init = ProgrameInit;
+    e->Exit = ProgrameExit;
     e->GameLoop = GameLoop;
     return e;
 }
