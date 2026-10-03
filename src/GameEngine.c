@@ -29,6 +29,7 @@ void ProgrameExit(GameEngine *e) {
     SDL_DestroyWindow(e->data.window);
     SDL_Quit();
     free(e);
+    e = NULL;
 }
 
 GameEngine *createEngine() {
