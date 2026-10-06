@@ -3,13 +3,13 @@
 #include "include/base.h"
 
 static bool ProgrameRunning = true;
-static int bpm = 0;
+static double bpm = 0.0;
 static int division = 4;
 static char buffer[32] = {0};
 static int inputLen = 0;
 struct Input {
     char buffer[32];
-    int inputLen; 
+    int inputLen;
 };
 
 void CatchEvent(GameEngine *e);
@@ -19,10 +19,8 @@ void GameLoop(GameEngine *e) {
     while (ProgrameRunning) {
         CatchEvent(e);
         SDL_RenderClear(e->data.render);
-        char *text;
-        snprintf(text, 20, "BPM %d", bpm);
-//        RenderText(e, 100, 200, "Input a bpm");
-        everyDivisionTime(e, bpm, 4, 4);
+        //        RenderText(e, 100, 200, "Input a bpm");
+        everyDivisionTime(e, bpm, 4);
         SDL_RenderPresent(e->data.render);
         SDL_Delay(20);
     }
@@ -32,13 +30,14 @@ void GameLoop(GameEngine *e) {
     return;
 }
 
-void everyDivisionTime(GameEngine *e, int bpm, int division, int n) {
-    float timeOfBeat = 60.0000f / bpm;
-    float timeOfDivision = timeOfBeat / division;
-    RenderText(e, 100, 200, "Bpm: %d", bpm);
+void everyDivisionTime(GameEngine *e, double bpm_local, int division_local) {
+    division = 0;
+    double timeOfBeat = 60.0 / bpm_local;
+    double timeOfDivision = timeOfBeat / (double)division_local;
+    RenderText(e, 100, 200, "Bpm: %.2f", bpm_local);
     RenderText(e, 100, 300, "Beat per sec:%.2fs", timeOfBeat);
     RenderText(e, 100, 350, "division per sec:%.4fs", timeOfDivision);
-    RenderText(e, 100, 400, "Amount of beat per second:%.1f", bpm / 60.0f);
+    RenderText(e, 100, 400, "Amount of beat per second:%lf", bpm / 60);
     return;
 }
 
@@ -50,7 +49,7 @@ void RenderText(GameEngine *e, int x, int y, const char *fmt, ...) {
     va_copy(args_copy, args);
 
     // 计算缓冲区大小
-    int len = vsnprintf(NULL, 0, fmt, args_copy);
+    size_t len = (size_t)vsnprintf(NULL, 0, fmt, args_copy);
     va_end(args_copy);
     if (len < 0) {
         va_end(args);
@@ -66,13 +65,13 @@ void RenderText(GameEngine *e, int x, int y, const char *fmt, ...) {
     // 格式化
     vsnprintf(buff, len + 1, fmt, args);
     va_end(args);
-    SDL_Surface *sur = TTF_RenderText_LCD(e->data.font, buff, len , fg,
+    SDL_Surface *sur = TTF_RenderText_LCD(e->data.font, buff, len, fg,
                                           bg); // 创建纹理
     SDL_Texture *tex = SDL_CreateTextureFromSurface(e->data.render, sur);
     float w, h;
     SDL_GetTextureSize(tex, &w, &h);
     SDL_DestroySurface(sur);
-    SDL_FRect f = {x, y, w, h};
+    SDL_FRect f = {(float)x, (float)y, w, h};
     SDL_RenderTexture(e->data.render, tex, NULL, &f);
     SDL_DestroyTexture(tex);
     free(buff);
@@ -95,7 +94,7 @@ void CatchEvent(GameEngine *e) {
             case SDL_EVENT_KEY_DOWN:
                 if (e->data.event.key.key == SDLK_RETURN) {
                     bpm = atoi(buffer);
-                    printf("BPM: %d\n", bpm);
+                    // printf("BPM: %d\n", bpm);
                     buffer[0] = '\0';
                     inputLen = 0;
                 }

@@ -9,7 +9,7 @@
 void GameLoop(GameEngine *e);
 
 //输出每一小节的时间，暂时放在这里
-void everyDivisionTime(GameEngine *e, int bpm, int division,int n);
+void everyDivisionTime(GameEngine *e, double bpm, int division);
 
 //封装函数，用于渲染指定文字到指定地方
 void RenderText(GameEngine *e, int x, int y,const char* fmt, ...);

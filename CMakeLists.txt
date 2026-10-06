@@ -13,24 +13,31 @@ add_executable(LightMania ./src/main.c ./src/GameEngine.c ./src/GameLoop.c)
 
 #开启严格警告（省一些麻烦，被某些神秘小Bug恶心到了）
 target_compile_options(LightMania PRIVATE
-    -Wall
-    -Wextra
-    -Wformat=2
-    -Wshadow
-    -Wconversion
-    -Wsign-conversion
-    -Wdouble-promotion
-    -Wnull-dereference
-    -Wstrict-prototypes
-    -Wmissing-prototypes
-    -Wold-style-definition
-    -Wundef
-    -Wpointer-arith
-    -Wcast-qual
-    -Wwrite-strings
-    -Wswitch-enum
-    -Wunused-macros
-    -Werror
+    $<$<C_COMPILER_ID:GNU,Clang,AppleClang>:
+        -Wall
+        -Wextra
+        -Wformat=2
+        -Wshadow
+        -Wconversion
+        -Wsign-conversion
+        -Wdouble-promotion
+        -Wnull-dereference
+        -Wstrict-prototypes
+        -Wmissing-prototypes
+        -Wold-style-definition
+        -Wundef
+        -Wpointer-arith
+        -Wcast-qual
+        -Wwrite-strings
+        -Wswitch-enum
+        -Wunused-macros
+        #-Werror
+    >
+    $<$<C_COMPILER_ID:MSVC>:
+        /W4
+        /WX
+        /permissive-
+    >
 )
 
 target_include_directories(LightMania PRIVATE
