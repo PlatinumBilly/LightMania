@@ -3,7 +3,7 @@
 
 #include "base.h"
 
-#include "GameEngine.h"
+#include "GameEngine/GameEngine.h"
 
 //游戏主逻辑运行的地方，由main.c引入
 void GameLoop(GameEngine *e);

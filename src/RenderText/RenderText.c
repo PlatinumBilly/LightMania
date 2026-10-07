@@ -1,4 +1,4 @@
-#include "RenderText.h"
+#include "RenderText/RenderText.h"
 #include "base.h"
 
 void RenderText(GameEngine *e, int x, int y, const char *fmt, ...) {

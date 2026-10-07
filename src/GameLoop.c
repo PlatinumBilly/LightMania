@@ -1,7 +1,8 @@
 #include "GameLoop.h"
-#include "GameEngine.h"
+#include "GameEngine//GameEngine.h"
+#include "include/RenderText/RenderText.h"
+#include "include/TextInput/TextInputMgr.h"
 #include "include/base.h"
-#include "include/RenderText.h"
 
 static bool ProgrameRunning = true;
 static double bpm = 0.0;
@@ -12,9 +13,26 @@ static int inputLen = 0;
 void CatchEvent(GameEngine *e);
 
 void GameLoop(GameEngine *e) {
+    TextInputMgr mgr;
+    TextInputMgr_Init(&mgr);
+    TextInput nameInput, pwdInput;
+    TextInput_Init(&nameInput, NULL, NULL);
+    TextInput_Init(&pwdInput, NULL, NULL);
+
+    TextInputMgr_Add(&mgr, &nameInput);
+    TextInputMgr_Add(&mgr, &pwdInput);
+
     SDL_SetRenderDrawColor(e->data.render, 255, 255, 255, 255);
     while (ProgrameRunning) {
-        CatchEvent(e);
+        //CatchEvent(e);
+        while (SDL_PollEvent(&e->data.event)) {
+            if (e->data.event.type == SDL_EVENT_QUIT) {
+                ProgrameRunning = false;
+                continue;
+            }
+            TextInputMgr_HandleEvent(&mgr, &e->data.event);
+        }
+        TextInputMgr_Update(&mgr, e->data.window);
         SDL_RenderClear(e->data.render);
         //        RenderText(e, 100, 200, "Input a bpm");
         everyDivisionTime(e, bpm, 4);
@@ -28,7 +46,7 @@ void GameLoop(GameEngine *e) {
 }
 
 void everyDivisionTime(GameEngine *e, double bpm_local, int division_local) {
-    division    = 0;
+    division = 0;
     double timeOfBeat = 60.0 / bpm_local;
     double timeOfDivision = timeOfBeat / (double)division_local;
     RenderText(e, 100, 200, "Bpm: %.2f", bpm_local);
@@ -37,7 +55,6 @@ void everyDivisionTime(GameEngine *e, double bpm_local, int division_local) {
     RenderText(e, 100, 400, "Amount of beat per second:%lf", bpm / 60);
     return;
 }
-
 
 void CatchEvent(GameEngine *e) {
     while (SDL_PollEvent(&e->data.event)) {
