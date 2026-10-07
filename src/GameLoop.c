@@ -8,10 +8,6 @@ static double bpm = 0.0;
 static int division = 4;
 static char buffer[32] = {0};
 static int inputLen = 0;
-struct Input {
-    char buffer[32];
-    int inputLen;
-};
 
 void CatchEvent(GameEngine *e);
 
@@ -32,7 +28,7 @@ void GameLoop(GameEngine *e) {
 }
 
 void everyDivisionTime(GameEngine *e, double bpm_local, int division_local) {
-    division = 0;
+    division    = 0;
     double timeOfBeat = 60.0 / bpm_local;
     double timeOfDivision = timeOfBeat / (double)division_local;
     RenderText(e, 100, 200, "Bpm: %.2f", bpm_local);

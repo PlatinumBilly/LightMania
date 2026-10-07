@@ -17,6 +17,8 @@ target_sources(LightMania PRIVATE
     src/GameEngine.c
     src/GameLoop.c
     src/RenderText.c
+    src/TextInput.c
+    src/TextInputMgr.c
 )
 
 #开启严格警告（省一些麻烦，被某些神秘小Bug恶心到了）
