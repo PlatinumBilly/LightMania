@@ -1,4 +1,4 @@
-#include "include/GameEngine.h"
+#include "include/GameEngine/GameEngine.h"
 #include "include/GameLoop.h"
 #include "include/base.h"
 
@@ -14,6 +14,7 @@ void ProgrameInit(GameEngine *e) {
         TTF_OpenFont("/usr/share/fonts/truetype/ubuntu/UbuntuMono-B.ttf",
                      16); // 该字体仅作为临时测试使用
     __TRY(e->data.font);
+    SDL_StartTextInput(e->data.window);
     return;
 cleanup:
     if (e->data.window)

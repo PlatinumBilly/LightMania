@@ -1,41 +1,30 @@
 #include "GameLoop.h"
 #include "GameEngine//GameEngine.h"
 #include "include/RenderText/RenderText.h"
-#include "include/TextInput/TextInputMgr.h"
 #include "include/base.h"
 
 static bool ProgrameRunning = true;
 static double bpm = 0.0;
 static int division = 4;
-static char buffer[32] = {0};
+static char inputBuffer[32] = { 0 };
 static int inputLen = 0;
 
-void CatchEvent(GameEngine *e);
+void CatchEvent(GameEngine* e);
 
-void GameLoop(GameEngine *e) {
-    TextInputMgr mgr;
-    TextInputMgr_Init(&mgr);
-    TextInput nameInput, pwdInput;
-    TextInput_Init(&nameInput, NULL, NULL);
-    TextInput_Init(&pwdInput, NULL, NULL);
-
-    TextInputMgr_Add(&mgr, &nameInput);
-    TextInputMgr_Add(&mgr, &pwdInput);
+void GameLoop(GameEngine* e)
+{
 
     SDL_SetRenderDrawColor(e->data.render, 255, 255, 255, 255);
     while (ProgrameRunning) {
-        //CatchEvent(e);
-        while (SDL_PollEvent(&e->data.event)) {
-            if (e->data.event.type == SDL_EVENT_QUIT) {
-                ProgrameRunning = false;
-                continue;
-            }
-            TextInputMgr_HandleEvent(&mgr, &e->data.event);
-        }
-        TextInputMgr_Update(&mgr, e->data.window);
+        CatchEvent(e);
         SDL_RenderClear(e->data.render);
-        //        RenderText(e, 100, 200, "Input a bpm");
-        everyDivisionTime(e, bpm, 4);
+        if (0 == strlen(inputBuffer)) { // 比较字符串是否为空
+            strncpy(inputBuffer, "OwO", 32);
+        }
+        if(inputLen == 31){
+            RenderText(e, 100, 300, "Too many word!");
+        }
+        RenderText(e, 100, 200, "%s", inputBuffer); // 仅作渲染测试
         SDL_RenderPresent(e->data.render);
         SDL_Delay(20);
     }
@@ -45,7 +34,8 @@ void GameLoop(GameEngine *e) {
     return;
 }
 
-void everyDivisionTime(GameEngine *e, double bpm_local, int division_local) {
+void everyDivisionTime(GameEngine* e, double bpm_local, int division_local)
+{
     division = 0;
     double timeOfBeat = 60.0 / bpm_local;
     double timeOfDivision = timeOfBeat / (double)division_local;
@@ -56,29 +46,29 @@ void everyDivisionTime(GameEngine *e, double bpm_local, int division_local) {
     return;
 }
 
-void CatchEvent(GameEngine *e) {
+void CatchEvent(GameEngine* e)
+{
     while (SDL_PollEvent(&e->data.event)) {
         switch (e->data.event.type) {
-            case SDL_EVENT_QUIT:
-                ProgrameRunning = false;
-                break;
-            case SDL_EVENT_TEXT_INPUT:
-                for (int i = 0; e->data.event.text.text[i] && inputLen < 31;
-                     i++) {
-                    buffer[inputLen++] = e->data.event.text.text[i];
-                    buffer[inputLen] = '\0';
-                }
-                break;
-            case SDL_EVENT_KEY_DOWN:
-                if (e->data.event.key.key == SDLK_RETURN) {
-                    bpm = atoi(buffer);
-                    // printf("BPM: %d\n", bpm);
-                    buffer[0] = '\0';
-                    inputLen = 0;
-                }
-                break;
-            default:
-                break;
+        case SDL_EVENT_QUIT:
+            SDL_Log("\n Quit event recevie.");
+            ProgrameRunning = false;
+            break;
+        case SDL_EVENT_TEXT_INPUT:
+            for (int i = 0; e->data.event.text.text[i] && inputLen < 31;
+                i++) {
+                inputBuffer[inputLen++] = e->data.event.text.text[i];
+                inputBuffer[inputLen] = '\0';
+            }
+            break;
+        case SDL_EVENT_KEY_DOWN:
+            if (e->data.event.key.key == SDLK_RETURN) {
+                inputBuffer[0] = '\0';
+                inputLen = 0;
+            }
+            break;
+        default:
+            break;
         }
     }
 }
