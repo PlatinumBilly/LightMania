@@ -1,20 +1,30 @@
 #include "GameLoop.h"
-#include "GameEngine.h"
+#include "GameEngine//GameEngine.h"
+#include "include/RenderText/RenderText.h"
 #include "include/base.h"
 
 static bool ProgrameRunning = true;
+static double bpm = 0.0;
+static int division = 4;
+static char inputBuffer[32] = { 0 };
+static int inputLen = 0;
 
-void CatchEvent(GameEngine *e);
+void CatchEvent(GameEngine* e);
 
-void GameLoop(GameEngine *e) {
-    // float bpm = 120.0f;
-    // int division = 4;
-    // int inputLen = 0;
+void GameLoop(GameEngine* e)
+{
+
     SDL_SetRenderDrawColor(e->data.render, 255, 255, 255, 255);
     while (ProgrameRunning) {
         CatchEvent(e);
         SDL_RenderClear(e->data.render);
-        // RenderText(e, (char *)test, 200, 200);
+        if (0 == strlen(inputBuffer)) { // 比较字符串是否为空
+            strncpy(inputBuffer, "OwO", 32);
+        }
+        if(inputLen == 31){
+            RenderText(e, 100, 300, "Too many word!");
+        }
+        RenderText(e, 100, 200, "%s", inputBuffer); // 仅作渲染测试
         SDL_RenderPresent(e->data.render);
         SDL_Delay(20);
     }
@@ -24,74 +34,41 @@ void GameLoop(GameEngine *e) {
     return;
 }
 
-void everyDivisionTime(GameEngine *e, float bpm, int division) {
-    float timeOfBeat = 60.0000f / bpm;
-    float timeOfDivision = timeOfBeat / division;
-    SDL_Log("Beat per sec:%.2fs\n", timeOfBeat);
-    SDL_Log("division per sec:%.4fs", timeOfDivision);
-    SDL_Log("Amount of beat per second:%.1f", bpm / 60.0f);
+void everyDivisionTime(GameEngine* e, double bpm_local, int division_local)
+{
+    division = 0;
+    double timeOfBeat = 60.0 / bpm_local;
+    double timeOfDivision = timeOfBeat / (double)division_local;
+    RenderText(e, 100, 200, "Bpm: %.2f", bpm_local);
+    RenderText(e, 100, 300, "Beat per sec:%.2fs", timeOfBeat);
+    RenderText(e, 100, 350, "division per sec:%.4fs", timeOfDivision);
+    RenderText(e, 100, 400, "Amount of beat per second:%lf", bpm / 60);
     return;
 }
 
-void RenderText(GameEngine *e, const char text[], int x, int y) {
-    SDL_Color fg = {0, 0, 0, 255};       // 前景颜色
-    SDL_Color bg = {255, 255, 255, 255}; // 背景颜色
-    SDL_Surface *sur = TTF_RenderText_LCD(e->data.font, text, 0, fg,
-                                          bg); // 创建纹理，不过目前的泛用性过小
-    SDL_Texture *tex = SDL_CreateTextureFromSurface(e->data.render, sur);
-    float w, h;
-    SDL_GetTextureSize(tex, &w, &h);
-    SDL_DestroySurface(sur);
-    SDL_FRect f = {x, y, w, h};
-    SDL_RenderTexture(e->data.render, tex, NULL, &f);
-    SDL_DestroyTexture(tex);
-}
-
-void CatchEvent(GameEngine *e) {
-    static float bpm = 0.0f;
-    int division = 4;
-    static char buffer[32] = {0};
-    static int inputLen = 0;
+void CatchEvent(GameEngine* e)
+{
     while (SDL_PollEvent(&e->data.event)) {
         switch (e->data.event.type) {
-            case SDL_EVENT_QUIT:
-                ProgrameRunning = false;
-                break;
-            case SDL_EVENT_TEXT_INPUT:
-                for (int i = 0; e->data.event.text.text[i] && inputLen < 31;
-                     i++) {
-                    buffer[inputLen++] = e->data.event.text.text[i];
-                    buffer[inputLen] = '\0';
-                }
-                break;
-            case SDL_EVENT_KEY_DOWN:
-                if (e->data.event.key.key == SDLK_RETURN) {
-                    bpm = atoi(buffer);
-                    printf("bpm: %.2f\n", bpm);
-                    buffer[0] = '\0';
-                    inputLen = 0;
-                }
-                break;
-            default:
-                break;
+        case SDL_EVENT_QUIT:
+            SDL_Log("\n Quit event recevie.");
+            ProgrameRunning = false;
+            break;
+        case SDL_EVENT_TEXT_INPUT:
+            for (int i = 0; e->data.event.text.text[i] && inputLen < 31;
+                i++) {
+                inputBuffer[inputLen++] = e->data.event.text.text[i];
+                inputBuffer[inputLen] = '\0';
+            }
+            break;
+        case SDL_EVENT_KEY_DOWN:
+            if (e->data.event.key.key == SDLK_RETURN) {
+                inputBuffer[0] = '\0';
+                inputLen = 0;
+            }
+            break;
+        default:
+            break;
         }
-
-        // if (e->data.event.type == SDL_EVENT_QUIT) {
-        //     running = false;
-        // } else if (e->data.event.type == SDL_EVENT_TEXT_INPUT) {
-        //     for (int i = 0; e->data.event.text.text[i] && inputLen < 31; i++)
-        //     {
-        //         buffer[inputLen++] = e->data.event.text.text[i];
-        //         buffer[inputLen] = '\0';
-        //     }
-
-        // } else if (e->data.event.key.type == SDL_EVENT_KEY_DOWN) {
-        //     if (e->data.event.key.key == SDLK_RETURN) {
-        //         bpm = atoi(buffer);
-        //         printf("bpm: %.2f\n", bpm);
-        //         buffer[inputLen++] = '\0';
-        //         inputLen = 0;
-        //     }
-        // }
     }
 }

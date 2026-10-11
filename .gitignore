@@ -7,8 +7,11 @@ out/
 *.out
 CMakePresets.json
 
+fonts/
 .clangd
 .cache/
+
+compile_flags.txt
 
 .vscode/
 

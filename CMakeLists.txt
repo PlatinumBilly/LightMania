@@ -9,7 +9,44 @@ add_subdirectory(extern/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(extern/SDL_mixer)
 add_subdirectory(extern/SDL_ttf)
 
-add_executable(LightMania ./src/main.c ./src/GameEngine.c ./src/GameLoop.c)
+#替换了一个更加直观的添加源文件的方式
+add_executable(LightMania)
+
+target_sources(LightMania PRIVATE
+    src/main.c
+    src/GameEngine/GameEngine.c
+    src/GameLoop.c
+    src/RenderText/RenderText.c
+)
+
+#开启严格警告（省一些麻烦，被某些神秘小Bug恶心到了）
+target_compile_options(LightMania PRIVATE
+    $<$<C_COMPILER_ID:GNU,Clang,AppleClang>:
+        -Wall
+        -Wextra
+        -Wformat=2
+        -Wshadow
+        -Wconversion
+        -Wsign-conversion
+        -Wdouble-promotion
+        -Wnull-dereference
+        -Wstrict-prototypes
+        -Wmissing-prototypes
+        -Wold-style-definition
+        -Wundef
+        -Wpointer-arith
+        -Wcast-qual
+        -Wwrite-strings
+        -Wswitch-enum
+        -Wunused-macros
+        #-Werror
+    >
+    $<$<C_COMPILER_ID:MSVC>:
+        /W4
+        /WX
+        /permissive-
+    >
+)
 
 target_include_directories(LightMania PRIVATE
     ${CMAKE_SOURCE_DIR}

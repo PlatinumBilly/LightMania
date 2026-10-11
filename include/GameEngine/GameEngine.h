@@ -14,9 +14,10 @@ typedef struct GameEngineData {
 //游戏引擎，游戏的初始化与运行的统一调用接口
 struct GameEngine {
     GameEngineData data;
-    void (*Init)         (struct GameEngine *e);
-    void (*Exit)         (struct GameEngine *e);
-    void (*GameLoop)     (struct GameEngine *e);
+    void (*Init)            (struct GameEngine *e);
+    void (*Exit)            (struct GameEngine *e);
+    void (*GameLoop)        (struct GameEngine *e);
+    void (*DestoryEngine)   (struct GameEngine *e);
 };
 typedef struct GameEngine GameEngine;
 
@@ -25,5 +26,7 @@ void ProgrameInit(GameEngine *e);
 void ProgrameExit(GameEngine *e);
 
 GameEngine *createEngine();
+
+void DestroyEngine(GameEngine *e);
 
 #endif
